@@ -234,7 +234,22 @@ namespace MQTTnet.Server.Internal
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     queuedApplicationMessage = await Session.ApplicationMessagesQueue.Dequeue(cancellationToken).ConfigureAwait(false);
+
+                    if (queuedApplicationMessage != null && _serverOptions.BeforeSendInterceptor != null)
+                    {
+                        var beforeSendArguments = new BeforeSendArguments()
+                        {
+                            ApplicationMessage = queuedApplicationMessage.ApplicationMessage
+                        };
+                        await _serverOptions.BeforeSendInterceptor.BeforeSend(beforeSendArguments);
+                        if (!beforeSendArguments.DoSend)
+                        {
+                            _logger.Verbose("Client '{0}': Message on topic {topic} was skipped for sending by BeforeSend.", ClientId, queuedApplicationMessage.ApplicationMessage.Topic);
+                            continue;
+                        }
+                    }
                     
+
                     // Also check the cancellation token here because the dequeue is blocking and may take some time.
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -279,14 +294,39 @@ namespace MQTTnet.Server.Internal
                         }
                     }
 
+                    if (_serverOptions.SuccessfulSendHandler != null)
+                        await _serverOptions.SuccessfulSendHandler.HandleSuccessfulSendMessage(queuedApplicationMessage.ApplicationMessage);
                     _logger.Verbose("Client '{0}': Queued application message sent.", ClientId);
                 }
             }
             catch (OperationCanceledException)
             {
+                try
+                {
+                    if (_serverOptions.UnSuccessfulSendHandler != null)
+                        await _serverOptions.UnSuccessfulSendHandler.HandleUnSuceesfullSendMessage(queuedApplicationMessage.ApplicationMessage);
+                }
+                catch (Exception e)
+                {
+                }
             }
             catch (Exception exception)
             {
+
+                var tryReEnqueue = true;
+                try
+                {
+                    if (_serverOptions.UnSuccessfulSendHandler != null)
+                    {
+                        await _serverOptions.UnSuccessfulSendHandler.HandleUnSuceesfullSendMessage(queuedApplicationMessage.ApplicationMessage);
+                        tryReEnqueue = false;
+                    }
+                }
+                catch
+                {
+                    tryReEnqueue = true;
+                }
+
                 if (exception is MqttCommunicationTimedOutException)
                 {
                     _logger.Warning(exception, "Client '{0}': Sending publish packet failed: Timeout.", ClientId);
@@ -300,7 +340,7 @@ namespace MQTTnet.Server.Internal
                     _logger.Error(exception, "Client '{0}': Sending publish packet failed.", ClientId);
                 }
 
-                if (publishPacket?.QualityOfServiceLevel > MqttQualityOfServiceLevel.AtMostOnce)
+                if (tryReEnqueue && publishPacket?.QualityOfServiceLevel > MqttQualityOfServiceLevel.AtMostOnce)
                 {
                     if (queuedApplicationMessage != null)
                     {
@@ -308,8 +348,10 @@ namespace MQTTnet.Server.Internal
                         Session.ApplicationMessagesQueue.Enqueue(queuedApplicationMessage);
                     }
                 }
-
-                StopInternal();
+                else
+                {
+                    StopInternal();
+                }
             }
         }
 

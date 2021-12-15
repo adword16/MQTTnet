@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace MQTTnet.Server
 {
@@ -24,7 +24,9 @@ namespace MQTTnet.Server
         IMqttServerApplicationMessageInterceptor ApplicationMessageInterceptor { get; }
         IMqttServerClientMessageQueueInterceptor ClientMessageQueueInterceptor { get; }
         IMqttServerApplicationMessageInterceptor UndeliveredMessageInterceptor { get; }
-        
+        ISuccessfulSendHandler SuccessfulSendHandler { get; }
+        IUnSuccessfulSendHandler UnSuccessfulSendHandler { get; }
+        IBeforeSendInterceptor BeforeSendInterceptor { get; set; }
         MqttServerTcpEndpointOptions DefaultEndpointOptions { get; }
         MqttServerTlsTcpEndpointOptions TlsEndpointOptions { get; }
 

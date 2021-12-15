@@ -338,6 +338,7 @@ namespace MQTTnet.Server.Internal
             }
         }
 
+        
         async Task TryProcessNextQueuedApplicationMessage()
         {
             try
@@ -409,8 +410,10 @@ namespace MQTTnet.Server.Internal
                         applicationMessage.QualityOfServiceLevel,
                         senderClientId);
 
+
                     if (!checkSubscriptionsResult.IsSubscribed)
                     {
+                        
                         continue;
                     }
 

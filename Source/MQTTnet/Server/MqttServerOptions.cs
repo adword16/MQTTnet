@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MQTTnet.Server.Internal;
 
 namespace MQTTnet.Server
@@ -36,9 +36,13 @@ namespace MQTTnet.Server
         public IMqttServerUnsubscriptionInterceptor UnsubscriptionInterceptor { get; set; }
 
         public IMqttServerApplicationMessageInterceptor UndeliveredMessageInterceptor { get; set; }
+        public ISuccessfulSendHandler SuccessfulSendHandler { get; set; }
+        public IUnSuccessfulSendHandler UnSuccessfulSendHandler { get; set; }
 
         public IMqttServerStorage Storage { get; set; }
 
         public IMqttRetainedMessagesManager RetainedMessagesManager { get; set; } = new MqttRetainedMessagesManager();
+
+        public IBeforeSendInterceptor BeforeSendInterceptor { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace MQTTnet.Server
 {
@@ -7,3 +7,4 @@ namespace MQTTnet.Server
         Task InterceptApplicationMessagePublishAsync(MqttApplicationMessageInterceptorContext context);
     }
 }
+

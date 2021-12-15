@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Security;
 using System.Security.Authentication;
@@ -189,6 +189,12 @@ namespace MQTTnet.Server
             return this;
         }
 
+        public MqttServerOptionsBuilder WithBeforeSendInterceptor(IBeforeSendInterceptor beforeSendInterceptor)
+        {
+            _options.BeforeSendInterceptor = beforeSendInterceptor;
+            return this;
+        }
+
         public MqttServerOptionsBuilder WithMultiThreadedApplicationMessageInterceptor(Action<MqttApplicationMessageInterceptorContext> value)
         {
             _options.ApplicationMessageInterceptor = new MqttServerMultiThreadedApplicationMessageInterceptorDelegate(value);
@@ -236,6 +242,20 @@ namespace MQTTnet.Server
             _options.UndeliveredMessageInterceptor = new MqttServerApplicationMessageInterceptorDelegate(value);
             return this;
         }
+
+
+        public MqttServerOptionsBuilder WithSuccessfulSendHandler(ISuccessfulSendHandler successfulSendHandler)
+        {
+            _options.SuccessfulSendHandler = successfulSendHandler;
+            return this;
+        }
+
+        public MqttServerOptionsBuilder WithUnSuccessfulSendHandler(IUnSuccessfulSendHandler unsuccessfulSendHandler)
+        {
+            _options.UnSuccessfulSendHandler = unsuccessfulSendHandler;
+            return this;
+        }
+
 
         public MqttServerOptionsBuilder WithDefaultEndpointReuseAddress()
         {
