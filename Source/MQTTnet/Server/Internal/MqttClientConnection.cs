@@ -304,7 +304,7 @@ namespace MQTTnet.Server.Internal
                 try
                 {
                     if (_serverOptions.UnSuccessfulSendHandler != null)
-                        await _serverOptions.UnSuccessfulSendHandler.HandleUnSuceesfullSendMessage(queuedApplicationMessage.ApplicationMessage);
+                        await _serverOptions.UnSuccessfulSendHandler.HandleUnSuccessfulSendMessage(queuedApplicationMessage.ApplicationMessage);
                 }
                 catch (Exception e)
                 {
@@ -318,7 +318,7 @@ namespace MQTTnet.Server.Internal
                 {
                     if (_serverOptions.UnSuccessfulSendHandler != null)
                     {
-                        await _serverOptions.UnSuccessfulSendHandler.HandleUnSuceesfullSendMessage(queuedApplicationMessage.ApplicationMessage);
+                        await _serverOptions.UnSuccessfulSendHandler.HandleUnSuccessfulSendMessage(queuedApplicationMessage.ApplicationMessage);
                         tryReEnqueue = false;
                     }
                 }

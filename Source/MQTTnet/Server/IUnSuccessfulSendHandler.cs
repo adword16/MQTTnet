@@ -4,5 +4,5 @@ using MQTTnet.Packets;
 
 public interface IUnSuccessfulSendHandler
 {
-    Task HandleUnSuceesfullSendMessage(MqttApplicationMessage package);
+    Task HandleUnSuccessfulSendMessage(MqttApplicationMessage package);
 }

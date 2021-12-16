@@ -237,7 +237,7 @@ namespace MQTTnet.Server
             return this;
         }
 
-        public MqttServerOptionsBuilder WithUndeliveredMessageInterceptor(Action<MqttApplicationMessageInterceptorContext> value)
+        public MqttServerOptionsBuilder WithUndeliveredMessageInterceptor(Func<MqttApplicationMessageInterceptorContext, Task> value)
         {
             _options.UndeliveredMessageInterceptor = new MqttServerApplicationMessageInterceptorDelegate(value);
             return this;
